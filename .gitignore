@@ -1,0 +1,43 @@
+# .gitignore - Proyecto raíz con TypeScript y subcarpeta Python
+
+# === NODE / TYPESCRIPT IGNORE ===
+# Node modules y build
+node_modules/
+dist/
+build/
+out/
+
+# Archivos temporales
+*.log
+*.tsbuildinfo
+
+# Editor / IDE
+.vscode/
+*.swp
+.DS_Store
+.idea/
+
+# === PYTHON IGNORE PARA mcp-server-demo ===
+mcp-server-demo/__pycache__/
+mcp-server-demo/.venv/
+mcp-server-demo/.mypy_cache/
+mcp-server-demo/.pytest_cache/
+mcp-server-demo/.ruff_cache/
+mcp-server-demo/*.pyc
+
+# uv (gestor de dependencias en lugar de venv)
+mcp-server-demo/.uv/
+
+# Archivos específicos del entorno
+mcp-server-demo/.DS_Store
+mcp-server-demo/.env
+mcp-server-demo/.env.*
+
+# === GENERAL ===
+# Archivos temporales del sistema operativo
+*.bak
+*.tmp
+*.orig
+*.rej
+Thumbs.db
+ehthumbs.db
