@@ -1,0 +1,27 @@
+{
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "mcp": {
+        "servers": {
+            "python-mcp": {
+                "type": "stdio",
+                // "command": "uv",
+                // "command": ".venv/bin/uv",
+                // "args": [
+                //     "run",
+                //     "--with",
+                //     "mcp[cli]",
+                //     "mcp",
+                //     "run",
+                //     "/home/deglanrivas/Escritorio/JNE_DCGI/mcp_demo/mcp-server-demo/main.py"
+                // ]
+                "command": "/home/deglanrivas/Escritorio/JNE_DCGI/mcp_demo/mcp-server-demo/run_mcp.sh",
+                "args": []
+            }
+        }
+    }
+}
