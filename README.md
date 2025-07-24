@@ -57,7 +57,7 @@ uv sync
 ```bash
 docker run -e N8N_SECURE_COOKIE=false \
   -e EDITOR_BASE_URL=https://wr8n3j80-5678.brs.devtunnels.ms/ \
-  -e WEBHOOK_URL=https://wr8n3j80-5678.brs.d  evtunnels.ms/ \
+  -e WEBHOOK_URL=https://wr8n3j80-5678.brs.devtunnels.ms/ \
   -e N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE=true \
   -e N8N_RUNNERS_ENABLED=true \
   -it --rm --name n8n -p 5678:5678 \

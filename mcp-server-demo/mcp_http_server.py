@@ -82,37 +82,37 @@ async def validate_oracle_query(pregunta: str) -> dict:
 
 
 
-# from fastapi import FastAPI, HTTPException
-# from pydantic import BaseModel
-# import oracledb
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+import oracledb
 
-# oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient_19_27")
-# ORACLE_DSN = "eleccia/desarrollo@oda-x8-2ha-vm1:1521/OPEXTDESA"
+oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient_19_27")
+ORACLE_DSN = "eleccia/desarrollo@oda-x8-2ha-vm1:1521/OPEXTDESA"
 
 # class QueryRequest(BaseModel):
 #     query: str
 
-# @mcp.tool()
-# # async def execute_oracle_query(request: QueryRequest) -> dict:
-# async def execute_oracle_query(query: str) -> dict:
-#     try:
-#         with oracledb.connect(ORACLE_DSN) as connection:
-#             with connection.cursor() as cursor:
-#                 # cursor.execute(request.query)
-#                 cursor.execute(query)
-#                 # Try to fetch results (e.g., for SELECTs)
-#                 try:
-#                     results = cursor.fetchall()
-#                     columns = [col[0] for col in cursor.description]
-#                     return {
-#                         "columns": columns,
-#                         "rows": results
-#                     }
-#                 except oracledb.InterfaceError:
-#                     # No results to fetch (e.g., INSERT/UPDATE)
-#                     return {"message": "Query executed successfully"}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+@mcp.tool()
+# async def execute_oracle_query(request: QueryRequest) -> dict:
+async def execute_oracle_query(query: str) -> dict:
+    try:
+        with oracledb.connect(ORACLE_DSN) as connection:
+            with connection.cursor() as cursor:
+                # cursor.execute(request.query)
+                cursor.execute(query)
+                # Try to fetch results (e.g., for SELECTs)
+                try:
+                    results = cursor.fetchall()
+                    columns = [col[0] for col in cursor.description]
+                    return {
+                        "columns": columns,
+                        "rows": results
+                    }
+                except oracledb.InterfaceError:
+                    # No results to fetch (e.g., INSERT/UPDATE)
+                    return {"message": "Query executed successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Función para registrar herramientas manualmente
 def register_tool(name: str, func):
@@ -122,7 +122,7 @@ def register_tool(name: str, func):
 register_tool("add", add)
 register_tool("fetch_weather_3", fetch_weather_3)
 register_tool("validate_oracle_query", validate_oracle_query)
-# register_tool("execute_oracle_query", execute_oracle_query)
+register_tool("execute_oracle_query", execute_oracle_query)
 
 @app.post("/mcp")
 async def call_tool(request: Request):
