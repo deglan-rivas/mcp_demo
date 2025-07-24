@@ -44,6 +44,75 @@ async def fetch_weather_3(city: str) -> dict:
                 {"type": "text", "text": json.dumps(weather_data, indent=2)}
             ]
         }
+    
+@mcp.tool()
+async def validate_oracle_query(pregunta: str) -> dict:
+    # TODO: Aquí eventualmente se llamará a Gemini o LLM para generar el SQL desde la pregunta
+    # Por ahora usamos un ejemplo hardcoded simulado
+    ejemplo_sql = """
+    SELECT r.NUMERO, r.FECHA_EMISION, c.NOMBRE_COMPLETO AS CANDIDATO
+    FROM ELECCIA.RESOLUCION r
+    JOIN ELECCIA.CANDIDATO c ON r.ID_CANDIDATO = c.ID_CANDIDATO
+    WHERE EXTRACT(YEAR FROM r.FECHA_EMISION) = 2025
+    """
+
+    if not pregunta or len(pregunta) < 5:
+        return {
+            "valid": False,
+            "reason": "La pregunta es demasiado corta o vacía"
+        }
+
+    if not is_query_safe(ejemplo_sql):
+        return {
+            "valid": False,
+            "reason": "El query generado contiene instrucciones no permitidas"
+        }
+
+    return {
+        "valid": True,
+        "query": ejemplo_sql.strip(),
+        "message": "Consulta segura y validada"
+    }
+
+    # return {
+    #     "content": [
+    #         {"type": "text", "text": f"La pregunta es demasiado corta o vacía"}
+    #     ]
+    # }
+
+
+
+# from fastapi import FastAPI, HTTPException
+# from pydantic import BaseModel
+# import oracledb
+
+# oracledb.init_oracle_client(lib_dir="/opt/oracle/instantclient_19_27")
+# ORACLE_DSN = "eleccia/desarrollo@oda-x8-2ha-vm1:1521/OPEXTDESA"
+
+# class QueryRequest(BaseModel):
+#     query: str
+
+# @mcp.tool()
+# # async def execute_oracle_query(request: QueryRequest) -> dict:
+# async def execute_oracle_query(query: str) -> dict:
+#     try:
+#         with oracledb.connect(ORACLE_DSN) as connection:
+#             with connection.cursor() as cursor:
+#                 # cursor.execute(request.query)
+#                 cursor.execute(query)
+#                 # Try to fetch results (e.g., for SELECTs)
+#                 try:
+#                     results = cursor.fetchall()
+#                     columns = [col[0] for col in cursor.description]
+#                     return {
+#                         "columns": columns,
+#                         "rows": results
+#                     }
+#                 except oracledb.InterfaceError:
+#                     # No results to fetch (e.g., INSERT/UPDATE)
+#                     return {"message": "Query executed successfully"}
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
 
 # Función para registrar herramientas manualmente
 def register_tool(name: str, func):
@@ -52,6 +121,8 @@ def register_tool(name: str, func):
 # Registrar las herramientas
 register_tool("add", add)
 register_tool("fetch_weather_3", fetch_weather_3)
+register_tool("validate_oracle_query", validate_oracle_query)
+# register_tool("execute_oracle_query", execute_oracle_query)
 
 @app.post("/mcp")
 async def call_tool(request: Request):
@@ -139,6 +210,22 @@ async def call_tool_alt(request: Request):
         
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+def is_query_safe(query: str) -> bool:
+    """
+    Valida si un query SQL es seguro. Solo permite SELECT sin palabras peligrosas.
+    """
+    lower_query = query.strip().lower()
+    forbidden_keywords = ["delete", "drop", "update", "insert", "alter", "truncate", "exec", "--", ";", "/*", "*/"]
+
+    if not lower_query.startswith("select"):
+        return False
+
+    for keyword in forbidden_keywords:
+        if keyword in lower_query:
+            return False
+
+    return True
 
 # Ejecutar el servidor
 if __name__ == "__main__":

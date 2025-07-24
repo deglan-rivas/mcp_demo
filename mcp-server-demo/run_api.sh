@@ -1,0 +1,1 @@
+uv run mcp_http_server.py
